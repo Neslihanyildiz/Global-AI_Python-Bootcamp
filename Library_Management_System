@@ -1,0 +1,69 @@
+class Library:
+    def __init__(self, books="books.txt"):
+        self.books = books
+        self.file = open(self.books, "a+")
+
+    def __del__(self):
+        self.file.close()
+
+    def list_books(self):
+        self.file.seek(0)
+        books = self.file.readlines()
+        if not books:
+            print("No books found.")
+            return
+        
+        # Sort books by release year
+        sorted_books = sorted(books, key=lambda book: int(book.strip().split(',')[2]))
+        
+        print("Books are available in the library:")
+        for book in sorted_books:
+            book_info = book.strip().split(',')
+            print(f"Title: {book_info[0]}, Author: {book_info[1]}, Release Year: {book_info[2]}, Pages: {book_info[3]}")
+
+    def add_book(self):
+        title = input("Enter book title: ")
+        author = input("Enter book author: ")
+        release_year = input("Enter release year: ")
+        pages = input("Enter number of pages: ")
+        book_info = f"{title},{author},{release_year},{pages}\n"
+        self.file.write(book_info)
+        print("Book added.")
+
+    def remove_book(self):
+        title = input("Enter the title of the book to remove: ")
+        self.file.seek(0)
+        books = self.file.readlines()
+        updated_books = []
+        for book in books:
+            if title not in book:
+                updated_books.append(book)
+        self.file.seek(0)
+        self.file.truncate()
+        self.file.writelines(updated_books)
+        print("Book removed.")
+
+# Create an object named “lib” with “Library” class.
+lib = Library("books.txt")
+
+# Create a menu to interact with the “lib” object.
+while True:
+    print("\n*** MENU***")
+    print("1) List Books")
+    print("2) Add Book")
+    print("3) Remove Book")
+    print("q) Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == '1':
+        lib.list_books()
+    elif choice == '2':
+        lib.add_book()
+    elif choice == '3':
+        lib.remove_book()
+    elif choice == 'q':
+        print("Exit the program.")
+        break
+    else:
+        print("Enter a number from 1 to 3 or q.")
